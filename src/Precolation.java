@@ -33,11 +33,9 @@ public class Precolation {
                 && grid[row][col] == 1;
     }
     public boolean isFull(int x, int y) {
-        int col, row = grid.length -x-1;
-        if(row < grid.length && row >=0 &&
-                (col = grid[row].length -y-1)< grid[row].length && col >= 0){
-            return checkForPath(new Pair(row,col), new Stack<>()).isBoolPath();
-        }
+        int col, row = grid.length - x - 1;
+        return row < grid.length && row >= 0 && (col = grid[row].length - y - 1) < grid[row].length && col >= 0
+                && checkForPath(new Pair(0, 0), new Pair(row, col), new Stack<>()).isPrecolatesPath();
     }
     /*public boolean isFull(int x, int y, boolean flag){*//*
         int col, row = grid.length -x-1;
@@ -52,8 +50,25 @@ public class Precolation {
     }*/
 
 
-    private PathResponse <Pair> checkForPath(Pair p,  Stack <Pair> pairsInPath) {
-
+    private PathResponse <Pair> checkForPath(Pair currentPair, Pair finalPair,  Stack <Pair> pairsInPath) {
+        if(pairsInPath.contains(currentPair)){
+            return new PathResponse<Pair>(false).setStackPath(pairsInPath);
+        }else{
+            pairsInPath.add(currentPair);
+        }
+        if(currentPair.equals(finalPair)){
+            return new PathResponse<Pair>(true).setStackPath(pairsInPath);
+        }
+        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(currentPair.getRow(), currentPair.getCol(), pairsInPath);
+        for(Pair adjacentOpenNode : adjacentOpenNodes){
+            PathResponse <Pair> response;
+            if((response = checkForPath(adjacentOpenNode, finalPair, pairsInPath)).isPrecolatesPath()){
+                return response;
+            }else{
+                pairsInPath.pop();
+            }
+        }
+        return new PathResponse<Pair>(false).setStackPath(pairsInPath);
     }
 
     private List<Pair> getAdjacentOpenNodes(int row, int col, Stack<Pair> pairsInPath) {
@@ -79,6 +94,7 @@ public class Precolation {
             }
         }
         return result;*/
+        return false;
     }
     private List<Pair> getOpenNodesFirstRow() {
         List<Pair> list = new ArrayList<>();
@@ -140,26 +156,26 @@ public class Precolation {
     }
 
     private void printBoard() {
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
+        for (int[] aGrid : grid) {
+            for (int j = 0; j < aGrid.length; j++) {
                 String s = "";
-                if(j == 0 ){
-                    s+="| ";
+                if (j == 0) {
+                    s += "| ";
                 }
-                switch (grid[i][j]){
+                switch (aGrid[j]) {
                     case 0:
-                        s+="black ";
+                        s += "black ";
                         break;
                     case 1:
-                        s+="white ";
+                        s += "white ";
                         break;
                     case 2:
-                        s+="blue  ";
+                        s += "blue  ";
                         break;
                 }
-                if(j == grid[i].length -1){
-                    s = s.substring(s.length()-1);
-                    s+=" |\n";
+                if (j == aGrid.length - 1) {
+                    s = s.substring(s.length() - 1);
+                    s += " |\n";
                 }
                 System.out.print(s);
             }
@@ -167,23 +183,30 @@ public class Precolation {
     }
 
     private class PathResponse <T>{
-        private boolean boolPath;
+        private boolean precolatesPath;
         private Stack <T> stackPath;
 
-        public boolean isBoolPath() {
-            return boolPath;
+        PathResponse(boolean precolatesPath){
+            this.precolatesPath = precolatesPath;
+            this.stackPath = new Stack<>();
         }
 
-        public void setBoolPath(boolean boolPath) {
-            this.boolPath = boolPath;
+        boolean isPrecolatesPath() {
+            return precolatesPath;
+        }
+
+        public PathResponse <T> setPrecolatesPath(boolean precolatesPath) {
+            this.precolatesPath = precolatesPath;
+            return this;
         }
 
         public Stack<T> getStackPath() {
             return stackPath;
         }
 
-        public void setStackPath(Stack<T> stackPath) {
+        PathResponse <T>  setStackPath(Stack<T> stackPath) {
             this.stackPath = stackPath;
+            return this;
         }
     }
 }
