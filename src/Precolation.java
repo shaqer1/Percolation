@@ -84,22 +84,21 @@ public class Precolation {
         }
         return adjacentList;
     }
-    public boolean percolates(){/*
+    public boolean percolates(){
         boolean result = false;
-        List <Pair> openNodesFirstRow = getOpenNodesFirstRow();
-        for (int i = 0; i < openNodesFirstRow.size(); i++) {
-            if(isFull(openNodesFirstRow.get(i).getRow(), openNodesFirstRow.get(i).getCol(), false)){
+        List <Pair> openNodesBottomRow = getOpenNodesBottomRow();
+        for (Pair anOpenNodesBottomRow : openNodesBottomRow) {
+            if (isFull(anOpenNodesBottomRow.getRow(), anOpenNodesBottomRow.getCol())) {
                 result = true;
                 break;
             }
         }
-        return result;*/
-        return false;
+        return result;
     }
-    private List<Pair> getOpenNodesFirstRow() {
+    private List<Pair> getOpenNodesBottomRow() {
         List<Pair> list = new ArrayList<>();
         for (int i = 0; i < grid[0].length; i++) {
-            if(grid[0][i] == 1){
+            if(grid[grid.length-1][i] == 1){
                 list.add(new Pair(0,i));
             }
         }
