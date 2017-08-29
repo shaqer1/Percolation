@@ -16,7 +16,7 @@ public class Precolation {
     public Precolation(int n){
         this.n = n;
         grid = new int[n][n];
-        unionFinder = new UF(n);
+        unionFinder = new UF(n*n);
     }
     public void open(int x, int y){
         int col, row = grid.length -x-1;
