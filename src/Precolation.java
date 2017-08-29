@@ -23,7 +23,14 @@ public class Precolation {
         if(row < grid.length && row >=0 &&
                 (col = grid[row].length -y-1)< grid[row].length && col >= 0){
             grid[row][col] = 1;
+            connectPair(new Pair(row,col));
+        }
+    }
 
+    private void connectPair(Pair pair) {
+        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair.getRow(),pair.getCol());
+        for(Pair adjacentOpenNode : adjacentOpenNodes){
+            unionFinder.union(adjacentOpenNode.getValue(),pair.getValue());
         }
     }
     public boolean isOpen(int x, int y) {
@@ -35,48 +42,26 @@ public class Precolation {
     public boolean isFull(int x, int y) {
         int col, row = grid.length - x - 1;
         return row < grid.length && row >= 0 && (col = grid[row].length - y - 1) < grid[row].length && col >= 0
-                && checkForPath(new Pair(0, 0), new Pair(row, col), new Stack<>()).isPrecolatesPath();
+                && checkForPath(new Pair(row, col));
     }
-    /*public boolean isFull(int x, int y, boolean flag){*//*
-        int col, row = grid.length -x-1;
-        if(flag
-                && row < grid.length && row >=0 &&
-                (col = grid[row].length -y-1)< grid[row].length && col >= 0 && grid[row][col] != 0){
-            return checkForPath(new Pair(row,col), new Stack<Pair>());
-        }else if (!flag){
-            return checkForPath(new Pair(x,y), new Stack<Pair>());
-        }
-        return false;*//*
-    }*/
-
-
-    private PathResponse <Pair> checkForPath(Pair currentPair, Pair finalPair,  Stack <Pair> pairsInPath) {
-        if(pairsInPath.contains(currentPair)){
-            return new PathResponse<Pair>(false).setStackPath(pairsInPath);
-        }else{
-            pairsInPath.add(currentPair);
-        }
-        if(currentPair.equals(finalPair)){
-            return new PathResponse<Pair>(true).setStackPath(pairsInPath);
-        }
-        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(currentPair.getRow(), currentPair.getCol(), pairsInPath);
+    private boolean checkForPath(Pair finalPair) {
+        boolean result = false;
+        List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            PathResponse <Pair> response;
-            if((response = checkForPath(adjacentOpenNode, finalPair, pairsInPath)).isPrecolatesPath()){
-                return response;
-            }else{
-                pairsInPath.pop();
+            if(unionFinder.connected(adjacentOpenNode.getValue(), finalPair.getValue())){
+                result = true;
+                break;
             }
         }
-        return new PathResponse<Pair>(false).setStackPath(pairsInPath);
+        return result;
+
     }
 
-    private List<Pair> getAdjacentOpenNodes(int row, int col, Stack<Pair> pairsInPath) {
+    private List<Pair> getAdjacentOpenNodes(int row, int col/*, Stack<Pair> pairsInPath*/) {
         List <Pair> adjacentList = new ArrayList<>();
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
-                if(!(i==0 && j==0) && !pairsInPath.contains(new Pair(row+i,col+j))
-                        && row + i < grid.length && row + i >=0 && col +j <grid[row+i].length && col+j>=0 && grid[row+i][col+j] !=0){
+                if(row + i < grid.length && row + i >=0 && col +j <grid[row+i].length && col+j>=0 && grid[row+i][col+j] !=0){
                     adjacentList.add(new Pair(row+i,col+j));
                 }
             }
@@ -86,7 +71,7 @@ public class Precolation {
     }
     public boolean percolates(){
         boolean result = false;
-        List <Pair> openNodesBottomRow = getOpenNodesBottomRow();
+        List <Pair> openNodesBottomRow = getOpenNodesSurfaceOrBottom(true);
         for (Pair anOpenNodesBottomRow : openNodesBottomRow) {
             if (isFull(anOpenNodesBottomRow.getRow(), anOpenNodesBottomRow.getCol())) {
                 result = true;
@@ -95,11 +80,11 @@ public class Precolation {
         }
         return result;
     }
-    private List<Pair> getOpenNodesBottomRow() {
+    private List<Pair> getOpenNodesSurfaceOrBottom(boolean bottom) {
         List<Pair> list = new ArrayList<>();
         for (int i = 0; i < grid[0].length; i++) {
-            if(grid[grid.length-1][i] == 1){
-                list.add(new Pair(0,i));
+            if(grid[(bottom)?grid.length-1:0][i] == 1){
+                list.add(new Pair((bottom)?grid.length-1:0,i));
             }
         }
         return list;
@@ -131,17 +116,20 @@ public class Precolation {
         public String toString() {
             return "Row: " + row + ", " + "Column: " + col;
         }
+        int getValue() {
+            return this.getRow()*n + this.getCol();
+        }
     }
 
     public static void main(String[] args) {
         System.out.println(args[0]);
-        try{/*
-            In input = new In(args[0]);*/
-            int n = StdIn.readInt();
+        try{
+            In input = new In(args[0]);
+            int n = input.readInt();
             Precolation precolation = new Precolation(n);
-            StdIn.readLine();
-            while(StdIn.hasNextLine()){
-                String s = StdIn.readLine();
+            input.readLine();
+            while(input.hasNextLine()){
+                String s = input.readLine();
                 precolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
