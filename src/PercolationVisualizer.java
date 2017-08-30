@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class PercolationVisualizer {
-    private static final int ANIM_DELAY = 5000;
+    private static final int ANIM_DELAY = 100;
 
     public static void draw(Percolation perc, int N) {
         StdDraw.clear();
