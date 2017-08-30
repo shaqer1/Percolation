@@ -3,7 +3,7 @@ import java.awt.*;
 public class PercolationVisualizer {
     private static final int ANIM_DELAY = 100;
 
-    public static void draw(Percolation perc, int N) {
+    public static void draw(Percolation perc, int N) {//TODO: rows are 19 cols are 20
         StdDraw.clear();
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setXscale(0, N);

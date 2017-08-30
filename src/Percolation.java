@@ -1,4 +1,3 @@
-import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.ArrayList;
@@ -56,16 +55,18 @@ public class Percolation {
 
     }
 
-    private List<Pair> getAdjacentOpenNodes(int row, int col/*, Stack<Pair> pairsInPath*/) {//TODO: ignore diags
+    private List<Pair> getAdjacentOpenNodes(int row, int col) {
         List <Pair> adjacentList = new ArrayList<>();
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                if(row + i < grid.length && row + i >=0
-                        && col +j <grid[row+i].length && col+j>=0 && grid[row+i][col+j] !=0){
-                    adjacentList.add(new Pair(row+i,col+j));
-                }
+        int [] arr = {-1,1};
+        for (int i : arr) {
+            if(row + i < grid.length && row + i >=0 && grid[row+i][col] !=0){
+                    adjacentList.add(new Pair(row+i,col));
             }
-
+        }
+        for (int j : arr) {
+            if(col +j <grid[row].length && col+j>=0 && grid[row][col+j] !=0){
+                adjacentList.add(new Pair(row,col+j));
+            }
         }
         return adjacentList;
     }
@@ -89,6 +90,17 @@ public class Percolation {
         }
         return list;
     }
+
+    public int countOpenCells() {
+        int count = 0;
+        for(int [] arr : grid){
+            for(int x : arr){
+                count = (x>=1)?count+1:count;
+            }
+        }
+        return count;
+    }
+
     private class Pair {
         private int row;
         private int col;
@@ -136,8 +148,6 @@ public class Percolation {
             //percolation.printBoard();
             StdOut.println((percolation.percolates())?"Yes":"No");
             //percolation.printBoard();
-
-            //TODO:change return type and color board
         }catch (Exception e){
             e.printStackTrace();
         }
