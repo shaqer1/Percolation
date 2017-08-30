@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.UF;
+import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +7,7 @@ import java.util.List;
 public class Percolation {
     private int n;
     private int [][] grid;
-    private UF unionFinder;
+    private WeightedQuickUnionUF unionFinder;
     /*
     *int 0 is closed black
     * int 1 is open white
@@ -15,7 +16,7 @@ public class Percolation {
     public Percolation(int n){
         this.n = n;
         grid = new int[n][n];
-        unionFinder = new UF(n*n);
+        unionFinder = new WeightedQuickUnionUF(n*n);
     }
     public void open(int x, int y){
         int row = grid.length -x-1;
@@ -121,7 +122,7 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
-        System.out.println(args[0]);
+        //System.out.println(args[0]);
         try{
             In input = new In(args[0]);
             int n = input.readInt();
@@ -142,7 +143,7 @@ public class Percolation {
         }
     }
 
-    private void printBoard() {
+    public void printBoard() {
         for (int[] aGrid : grid) {
             for (int j = 0; j < aGrid.length; j++) {
                 String s = "";
