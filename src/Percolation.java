@@ -163,7 +163,7 @@ public class Percolation {
                 }
                 if (j == aGrid.length - 1) {
                     s = s.substring(0, s.length() - 1);
-                    s += "|\n";
+                    s += " |\n";
                 }
                 System.out.print(s);
             }
