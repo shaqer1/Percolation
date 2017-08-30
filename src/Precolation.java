@@ -133,9 +133,10 @@ public class Precolation {
                 precolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
-            precolation.printBoard();
-            StdOut.println(precolation.percolates());
-            precolation.printBoard();
+            //precolation.printBoard();
+            StdOut.println((precolation.percolates())?"Yes":"No");
+            //precolation.printBoard();
+
             //TODO:change return type and color board
         }catch (Exception e){
             e.printStackTrace();
