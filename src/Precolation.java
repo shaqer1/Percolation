@@ -19,11 +19,11 @@ public class Precolation {
         unionFinder = new UF(n*n);
     }
     public void open(int x, int y){
-        int col, row = grid.length -x-1;
+        int row = grid.length -x-1;
         if(row < grid.length && row >=0 &&
-                (col = grid[row].length -y-1)< grid[row].length && col >= 0){
-            grid[row][col] = 1;
-            connectPair(new Pair(row,col));
+                y < grid[row].length && y >= 0){
+            grid[row][y] = 1;
+            connectPair(new Pair(row, y));
         }
     }
 
@@ -34,15 +34,14 @@ public class Precolation {
         }
     }
     public boolean isOpen(int x, int y) {
-        int col, row = grid.length - x - 1;
+        int row = grid.length - x - 1;
         return row < grid.length && row >= 0
-                && (col = grid[row].length - y - 1) < grid[row].length && col >= 0
-                && grid[row][col] == 1;
+                && y < grid[row].length && y >= 0
+                && grid[row][y] == 1;
     }
     public boolean isFull(int x, int y) {
-        int col, row = grid.length - x - 1;
-        return row < grid.length && row >= 0 && (col = grid[row].length - y - 1) < grid[row].length && col >= 0
-                && checkForPath(new Pair(row, col));
+        return x < grid.length && x >= 0 && y < grid[x].length && y >= 0
+                && checkForPath(new Pair(x, y));
     }
     private boolean checkForPath(Pair finalPair) {
         boolean result = false;
@@ -61,7 +60,8 @@ public class Precolation {
         List <Pair> adjacentList = new ArrayList<>();
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
-                if(row + i < grid.length && row + i >=0 && col +j <grid[row+i].length && col+j>=0 && grid[row+i][col+j] !=0){
+                if(row + i < grid.length && row + i >=0
+                        && col +j <grid[row+i].length && col+j>=0 && grid[row+i][col+j] !=0){
                     adjacentList.add(new Pair(row+i,col+j));
                 }
             }
@@ -161,39 +161,11 @@ public class Precolation {
                         break;
                 }
                 if (j == aGrid.length - 1) {
-                    s = s.substring(s.length() - 1);
-                    s += " |\n";
+                    s = s.substring(0, s.length() - 1);
+                    s += "|\n";
                 }
                 System.out.print(s);
             }
-        }
-    }
-
-    private class PathResponse <T>{
-        private boolean precolatesPath;
-        private Stack <T> stackPath;
-
-        PathResponse(boolean precolatesPath){
-            this.precolatesPath = precolatesPath;
-            this.stackPath = new Stack<>();
-        }
-
-        boolean isPrecolatesPath() {
-            return precolatesPath;
-        }
-
-        public PathResponse <T> setPrecolatesPath(boolean precolatesPath) {
-            this.precolatesPath = precolatesPath;
-            return this;
-        }
-
-        public Stack<T> getStackPath() {
-            return stackPath;
-        }
-
-        PathResponse <T>  setStackPath(Stack<T> stackPath) {
-            this.stackPath = stackPath;
-            return this;
         }
     }
 }
