@@ -56,7 +56,7 @@ public class Percolation {
 
     }
 
-    private List<Pair> getAdjacentOpenNodes(int row, int col/*, Stack<Pair> pairsInPath*/) {
+    private List<Pair> getAdjacentOpenNodes(int row, int col/*, Stack<Pair> pairsInPath*/) {//TODO: ignore diags
         List <Pair> adjacentList = new ArrayList<>();
         for (int i = -1; i < 2; i++) {
             for (int j = -1; j < 2; j++) {
