@@ -2,9 +2,8 @@ import edu.princeton.cs.algs4.UF;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
-public class Precolation {
+public class Percolation {
     private int n;
     private int [][] grid;
     private UF unionFinder;
@@ -13,7 +12,7 @@ public class Precolation {
     * int 1 is open white
     * int 2 is open blue
     * */
-    public Precolation(int n){
+    public Percolation(int n){
         this.n = n;
         grid = new int[n][n];
         unionFinder = new UF(n*n);
@@ -126,16 +125,16 @@ public class Precolation {
         try{
             In input = new In(args[0]);
             int n = input.readInt();
-            Precolation precolation = new Precolation(n);
+            Percolation percolation = new Percolation(n);
             input.readLine();
             while(input.hasNextLine()){
                 String s = input.readLine();
-                precolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
+                percolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
-            //precolation.printBoard();
-            StdOut.println((precolation.percolates())?"Yes":"No");
-            //precolation.printBoard();
+            //percolation.printBoard();
+            StdOut.println((percolation.percolates())?"Yes":"No");
+            //percolation.printBoard();
 
             //TODO:change return type and color board
         }catch (Exception e){
