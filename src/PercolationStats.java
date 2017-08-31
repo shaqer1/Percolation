@@ -1,7 +1,7 @@
 public class PercolationStats {
     public static void main(String[] args) {
         try{
-            int T = Integer.parseInt(args[1]);
+             int T = Integer.parseInt(args[1]);
             double [] estimates = new double[T];
             double [] times = new double[T];
             long timeTotalInitial = System.currentTimeMillis();
@@ -13,7 +13,7 @@ public class PercolationStats {
                     int x = (int) StdRandom.uniform(0, N*N);
                     perc.open(x/N,x%N);
                 }
-                estimates[i] = perc.countOpenCells()/(N*N);
+                estimates[i] = perc.countOpenCells()/(N*N + 0.0);
                 times[i] = System.currentTimeMillis() - expStart;
             }
             long timeTotalFinal = System.currentTimeMillis();

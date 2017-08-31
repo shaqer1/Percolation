@@ -7,6 +7,8 @@ public class Percolation {
     private int n;
     private int [][] grid;
     private WeightedQuickUnionUF unionFinder;
+    private int numOpened;
+
     /*
     *int 0 is closed black
     * int 1 is open white
@@ -14,6 +16,7 @@ public class Percolation {
     * */
     public Percolation(int n){
         this.n = n;
+        numOpened = 0;
         grid = new int[n][n];
         unionFinder = new WeightedQuickUnionUF(n*n);
     }
@@ -21,6 +24,7 @@ public class Percolation {
         int row = grid.length -x-1;
         if(row < grid.length && row >=0 &&
                 y < grid[row].length && y >= 0){
+            numOpened++;
             grid[row][y] = 1;
             connectPair(new Pair(row, y));
         }
@@ -91,14 +95,14 @@ public class Percolation {
         return list;
     }
 
-    public int countOpenCells() {
+    public int countOpenCells() {/*
         int count = 0;
         for(int [] arr : grid){
             for(int x : arr){
                 count = (x>=1)?count+1:count;
             }
-        }
-        return count;
+        }*/
+        return numOpened;
     }
 
     private class Pair {
