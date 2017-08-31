@@ -17,11 +17,11 @@ public class PercolationStats {
                 times[i] = System.currentTimeMillis() - expStart;
             }
             long timeTotalFinal = System.currentTimeMillis();
-            StdOut.println("mean threshold=" + StdStats.mean(estimates));
-            StdOut.println("std dev=" + StdStats.stddev(estimates));
+            StdOut.printf("mean threshold=%.9f\n", StdStats.mean(estimates));
+            StdOut.printf("std dev=%.9f\n", StdStats.stddev(estimates));
             StdOut.println("time=" + (timeTotalFinal-timeTotalInitial));
-            StdOut.println("mean time=" + StdStats.mean(times));
-            StdOut.println("mean time=" + StdStats.stddev(times));
+            StdOut.printf("mean time=%.9f\n", StdStats.mean(times));
+            StdOut.printf("stddev time=%.9f\n", StdStats.stddev(times));
         }catch(Exception e){
             e.printStackTrace();
         }
