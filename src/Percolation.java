@@ -1,13 +1,29 @@
+import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Percolation {
     private int n;
     private int [][] grid;
-    private WeightedQuickUnionUF unionFinder;
+    private Object unionFinder;
+    private Class <?> type;
     private int numOpened;
+
+    public Percolation(int n, String typeUnion) {
+        if(typeUnion.equalsIgnoreCase("FAST")){
+            unionFinder = new WeightedQuickUnionUF(n*n);
+            type = WeightedQuickUnionUF.class;
+        }else{
+            unionFinder = new UF(n*n);
+            type = UF.class;
+        }
+        this.n = n;
+        numOpened = 0;
+        grid = new int[n][n];
+    }
 
     /*
     *int 0 is closed black
@@ -15,10 +31,7 @@ public class Percolation {
     * int 2 is open blue
     * */
     public Percolation(int n){
-        this.n = n;
-        numOpened = 0;
-        grid = new int[n][n];
-        unionFinder = new WeightedQuickUnionUF(n*n);
+        this(n, "SLOW");
     }
     public void open(int x, int y){
         int row = grid.length -x-1;
@@ -30,12 +43,43 @@ public class Percolation {
         }
     }
 
+    public static <T> T convertInstanceOfObject(Object o, Class<T> clazz) {
+        try {
+            return clazz.cast(o);
+        } catch(ClassCastException e) {
+            return null;
+        }
+    }
+
     private void connectPair(Pair pair) {
         List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair.getRow(),pair.getCol());
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            unionFinder.union(adjacentOpenNode.getValue(),pair.getValue());
+            methodCaller(unionFinder, adjacentOpenNode.getValue(),pair.getValue(), "union");
         }
     }
+
+    private Object methodCaller(Object p0, int value, int value1, String method) {
+        Class[] parameterTypes = new Class[2];
+        parameterTypes[0]= Integer.class;
+        parameterTypes[1]= Integer.class;
+        Object [] parameters = {value,value1};
+        if(unionFinder instanceof WeightedQuickUnionUF)
+            try {
+                Method m1 = WeightedQuickUnionUF.class.getMethod(method,parameterTypes);
+                return m1.invoke(unionFinder, parameters);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        else
+            try {
+                Method m1 = UF.class.getMethod(method,parameterTypes);
+                return m1.invoke(unionFinder, parameters);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+    }
+
     public boolean isOpen(int x, int y) {
         int row = grid.length - x - 1;
         return row < grid.length && row >= 0
@@ -50,7 +94,7 @@ public class Percolation {
         boolean result = false;
         List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            if(unionFinder.connected(adjacentOpenNode.getValue(), finalPair.getValue())){
+            if((boolean)methodCaller(unionFinder, adjacentOpenNode.getValue(), finalPair.getValue(), "connected")){
                 result = true;
                 break;
             }
