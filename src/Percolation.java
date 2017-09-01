@@ -43,14 +43,6 @@ public class Percolation {
         }
     }
 
-    public static <T> T convertInstanceOfObject(Object o, Class<T> clazz) {
-        try {
-            return clazz.cast(o);
-        } catch(ClassCastException e) {
-            return null;
-        }
-    }
-
     private void connectPair(Pair pair) {
         List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair.getRow(),pair.getCol());
         for(Pair adjacentOpenNode : adjacentOpenNodes){
@@ -60,8 +52,8 @@ public class Percolation {
 
     private Object methodCaller(Object p0, int value, int value1, String method) {
         Class[] parameterTypes = new Class[2];
-        parameterTypes[0]= Integer.class;
-        parameterTypes[1]= Integer.class;
+        parameterTypes[0]= int.class;
+        parameterTypes[1]= int.class;
         Object [] parameters = {value,value1};
         if(unionFinder instanceof WeightedQuickUnionUF)
             try {
