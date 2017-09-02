@@ -109,7 +109,6 @@ public class Percolation {
         }
         if((p.getValue()+1)%this.n != 0 && isOpen(new Pair(p.getValue()+1,this.n))){
             adjacentList.add(new Pair(p.getValue()+1, this.n));
-
         }
         return adjacentList;
     }
