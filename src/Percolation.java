@@ -7,24 +7,22 @@ import java.util.List;
 
 public class Percolation {
     private int n;
-    private int [][] grid;
+    private int nSquare;
+    private int [] gridVals;
     private Object unionFinder;
-    private Class <?> type;
     private int numOpened;
 
     public Percolation(int n, String typeUnion) {
         if(typeUnion.equalsIgnoreCase("FAST")){
             unionFinder = new WeightedQuickUnionUF(n*n);
-            type = WeightedQuickUnionUF.class;
         }else{
             unionFinder = new UF(n*n);
-            type = UF.class;
         }
         this.n = n;
+        this.nSquare = n*n;
         numOpened = 0;
-        grid = new int[n][n];
+        gridVals = new int[n*n];
     }
-
     /*
     *int 0 is closed black
     * int 1 is open white
@@ -34,17 +32,22 @@ public class Percolation {
         this(n, "SLOW");
     }
     public void open(int x, int y){
-        int row = grid.length -x-1;
-        if(row < grid.length && row >=0 &&
-                y < grid[row].length && y >= 0){
-            numOpened++;
-            grid[row][y] = 1;
-            connectPair(new Pair(row, y));
+        if(checkValidity(x,y)){
+            Pair p = new Pair(x, y, this.n);
+            if(gridVals[p.getValue()]  < 1) {
+                numOpened++;
+                gridVals[p.getValue()] = 1;
+            }
+            connectPair(p);
         }
     }
 
+    private boolean checkValidity(int x, int y) {
+        return x<this.n && x>=0 && y<this.n && y>=0;
+    }
+
     private void connectPair(Pair pair) {
-        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair.getRow(),pair.getCol());
+        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
             methodCaller(unionFinder, adjacentOpenNode.getValue(),pair.getValue(), "union");
         }
@@ -73,14 +76,10 @@ public class Percolation {
     }
 
     public boolean isOpen(int x, int y) {
-        int row = grid.length - x - 1;
-        return row < grid.length && row >= 0
-                && y < grid[row].length && y >= 0
-                && grid[row][y] == 1;
+        return checkValidity(x,y) && gridVals[new Pair(x,y,this.n).getValue()] >= 1;
     }
     public boolean isFull(int x, int y) {
-        return x < grid.length && x >= 0 && y < grid[x].length && y >= 0
-                && checkForPath(new Pair(x, y));
+        return checkValidity(x,y) && checkForPath(new Pair(x, y, this.n));
     }
     private boolean checkForPath(Pair finalPair) {
         boolean result = false;
@@ -95,21 +94,30 @@ public class Percolation {
 
     }
 
-    private List<Pair> getAdjacentOpenNodes(int row, int col) {
+    private List<Pair> getAdjacentOpenNodes(Pair p) {
         List <Pair> adjacentList = new ArrayList<>();
-        int [] arr = {-1,1};
+        int [] arr = {-1*this.n,this.n};
         for (int i : arr) {
-            if(row + i < grid.length && row + i >=0 && grid[row+i][col] !=0){
-                    adjacentList.add(new Pair(row+i,col));
+            if(p.getValue() + i < this.nSquare && p.getValue() + i >=0
+                    && gridVals[p.getValue()+i] !=0){
+                    adjacentList.add(new Pair(p.getValue()+i, this.n));
             }
         }
-        for (int j : arr) {
-            if(col +j <grid[row].length && col+j>=0 && grid[row][col+j] !=0){
-                adjacentList.add(new Pair(row,col+j));
-            }
+        if((p.getValue()-1)%this.n != this.n - 1 && isOpen(new Pair(p.getValue()-1,this.n))){
+            adjacentList.add(new Pair(p.getValue()-1, this.n));
+
+        }
+        if((p.getValue()+1)%this.n != 0 && isOpen(new Pair(p.getValue()+1,this.n))){
+            adjacentList.add(new Pair(p.getValue()+1, this.n));
+
         }
         return adjacentList;
     }
+
+    private boolean isOpen(Pair p) {
+        return isOpen(p.getRow(),p.getCol());
+    }
+
     public boolean percolates(){
         boolean result = false;
         List <Pair> openNodesBottomRow = getOpenNodesSurfaceOrBottom(true);
@@ -123,31 +131,34 @@ public class Percolation {
     }
     private List<Pair> getOpenNodesSurfaceOrBottom(boolean bottom) {
         List<Pair> list = new ArrayList<>();
-        for (int i = 0; i < grid[0].length; i++) {
-            if(grid[(bottom)?grid.length-1:0][i] == 1){
-                list.add(new Pair((bottom)?grid.length-1:0,i));
+        int min = (bottom)? 0:(this.n*(this.n-1)), max = (!bottom)?this.nSquare: this.n;
+        for (int i = min; i < max; i++) {
+            Pair p = new Pair(i,this.n);
+            if(isOpen(p.getRow(),p.getCol())){
+                list.add(p);
             }
         }
         return list;
     }
 
-    public int countOpenCells() {/*
-        int count = 0;
-        for(int [] arr : grid){
-            for(int x : arr){
-                count = (x>=1)?count+1:count;
-            }
-        }*/
+    public int countOpenCells() {
         return numOpened;
     }
 
     private class Pair {
         private int row;
         private int col;
-        Pair(int row, int col){
+        private int value;
+        Pair(int row, int col, int n){
             this.row = row;
             this.col = col;
+            this.value = this.getRow()*n + this.getCol();
         }
+
+        Pair(int value, int n) {
+            this(value/n,value%n, n);
+        }
+
         int getRow() {
             return row;
         }
@@ -166,10 +177,10 @@ public class Percolation {
         }
         @Override
         public String toString() {
-            return "Row: " + row + ", " + "Column: " + col;
+            return "Row: " + row + ", " + "Column: " + col + ", Val: " + value;
         }
         int getValue() {
-            return this.getRow()*n + this.getCol();
+            return value;
         }
     }
 
@@ -185,7 +196,7 @@ public class Percolation {
                 percolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
-            //percolation.printBoard();
+            percolation.printBoard();
             StdOut.println((percolation.percolates())?"Yes":"No");
             //percolation.printBoard();
         }catch (Exception e){
@@ -194,29 +205,30 @@ public class Percolation {
     }
 
     public void printBoard() {
-        for (int[] aGrid : grid) {
-            for (int j = 0; j < aGrid.length; j++) {
-                String s = "";
-                if (j == 0) {
-                    s += "| ";
-                }
-                switch (aGrid[j]) {
-                    case 0:
-                        s += "black ";
-                        break;
-                    case 1:
-                        s += "white ";
-                        break;
-                    case 2:
-                        s += "blue  ";
-                        break;
-                }
-                if (j == aGrid.length - 1) {
-                    s = s.substring(0, s.length() - 1);
-                    s += " |\n";
-                }
+        StringBuilder s = new StringBuilder();
+        for (int j = gridVals.length - 1; j >= 0; j--) {
+            if (s.length() == 0) {
+                s = new StringBuilder("|\n");
+            }
+            switch (gridVals[j]) {
+                case 0:
+                    s.insert(0, "black ");
+                    break;
+                case 1:
+                    s.insert(0, "white ");
+                    break;
+                case 2:
+                    s.insert(0, "blue  ");
+                    break;
+            }
+            if (j%this.n == 0) {
+                s.insert(0, "| ");
                 System.out.print(s);
+                s = new StringBuilder();
             }
         }
+        System.out.println("_________________________________" +
+                "\n---------------------------------" +
+                "\n_________________________________\n");
     }
 }
