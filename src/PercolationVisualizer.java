@@ -3,23 +3,20 @@ import java.awt.*;
 public class PercolationVisualizer {
     private static final int ANIM_DELAY = 100;
 
-    public static void draw(Percolation perc, int N) {//TODO: rows are 19 cols are 20
+    public static void draw(Percolation perc, int N) {
         StdDraw.clear();
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setXscale(0, N);
         StdDraw.setYscale(0, N);
         StdDraw.filledSquare(N/2.0, N/2.0, N/2.0);
 
-        int opened = 0;
         for (int row = 0; row < N; row++) {
             for (int col = 0; col < N; col++) {
-                if (perc.isFull(N - 1 - row, col)) {
+                if (perc.isFull(row, col)) {
                     StdDraw.setPenColor(StdDraw.BOOK_LIGHT_BLUE);
-                    opened++;
                 }
                 else if (perc.isOpen(row, col)) {
                     StdDraw.setPenColor(StdDraw.WHITE);
-                    opened++;
                 }
                 else
                     StdDraw.setPenColor(StdDraw.BLACK);
