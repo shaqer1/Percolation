@@ -49,11 +49,11 @@ public class Percolation {
     private void connectPair(Pair pair) {
         List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            methodCaller(unionFinder, adjacentOpenNode.getValue(),pair.getValue(), "union");
+            methodCaller(adjacentOpenNode.getValue(),pair.getValue(), "union");
         }
     }
 
-    private Object methodCaller(Object p0, int value, int value1, String method) {
+    private Object methodCaller(int value, int value1, String method) {
         Class[] parameterTypes = new Class[2];
         parameterTypes[0]= int.class;
         parameterTypes[1]= int.class;
@@ -85,7 +85,7 @@ public class Percolation {
         boolean result = false;
         List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            if((boolean)methodCaller(unionFinder, adjacentOpenNode.getValue(), finalPair.getValue(), "connected")){
+            if((boolean)methodCaller(adjacentOpenNode.getValue(), finalPair.getValue(), "connected")){
                 result = true;
                 break;
             }

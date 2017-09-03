@@ -8,7 +8,8 @@ public class PercolationStats {
             for (int i = 0; i < T; i++) {
                 long expStart = System.currentTimeMillis();
                 int N = Integer.parseInt(args[0]);
-                Percolation perc = new Percolation(N);
+                String type = args[2];
+                Percolation perc = new Percolation(N, type);
                 while(!perc.percolates()){
                     int x = (int) StdRandom.uniform(0, N*N);
                     perc.open(x/N,x%N);
