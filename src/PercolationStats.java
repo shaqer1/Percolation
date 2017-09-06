@@ -18,7 +18,7 @@ public class PercolationStats {
             long timeTotalFinal = System.currentTimeMillis();
             s += String.format("mean threshold=%.9f\n", StdStats.mean(estimates));
             s += String.format("std dev=%.9f\n", StdStats.stddev(estimates));
-            s += "time=\n" + (timeTotalFinal-timeTotalInitial);
+            s += "time=" + (timeTotalFinal-timeTotalInitial) + "\n";
             s += String.format("mean time=%.9f\n", StdStats.mean(times));
             s += String.format("stddev time=%.9f\n", StdStats.stddev(times));
         }catch(Exception e){
