@@ -39,7 +39,7 @@ public class PercolationVisualizer {
 
         StdDraw.show(0);
 
-        Percolation perc = new Percolation(N);
+        Percolation perc = new Percolation(N, "fast");
         draw(perc, N);
         StdDraw.show(ANIM_DELAY);
         while (!in.isEmpty()) {
@@ -49,6 +49,6 @@ public class PercolationVisualizer {
             draw(perc, N);
             StdDraw.show(ANIM_DELAY);
         }
-        perc.printBoard();
+        //perc.printBoard();
     }
 }
