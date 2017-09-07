@@ -5,13 +5,15 @@ public class PercolationStats {
             double [] estimates = new double[T];
             double [] times = new double[T];
             long timeTotalInitial = System.currentTimeMillis();
+            Percolation perc = new Percolation(N);
             for (int i = 0; i < T; i++) {
                 long expStart = System.currentTimeMillis();
-                Percolation perc = new Percolation(N, type);
+                perc = new Percolation(N, type);
                 while(!perc.percolates()){
                     int x = (int) StdRandom.uniform(0, N*N);
                     perc.open(x/N,x%N);
                 }
+                //PercolationVisualizer.draw(perc,N);
                 estimates[i] = perc.countOpenCells()/(N*N + 0.0);
                 times[i] = System.currentTimeMillis() - expStart;
             }
@@ -27,7 +29,6 @@ public class PercolationStats {
         return s;
     }
     public static void main(String[] args) {
-
         int N = Integer.parseInt(args[0]);
         int T = Integer.parseInt(args[1]);
         String type = args[2];

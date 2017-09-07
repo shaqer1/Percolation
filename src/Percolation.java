@@ -1,34 +1,41 @@
 import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Percolation {
     private int n;
+    private boolean weighted = false;
     private int nSquare;
     private int [] gridVals;
     private Object unionFinder;
+    private List<Pair> topElements = new ArrayList<>();
+    private List<Pair> bottomElements = new ArrayList<>();
     private int numOpened;
 
-    public Percolation(int n, String typeUnion) {
-        if(typeUnion.equalsIgnoreCase("FAST")){
-            unionFinder = new WeightedQuickUnionUF(n*n);
-        }else{
-            unionFinder = new UF(n*n);
+    public Percolation(int n, String typeUnion){
+        try{
+            this.n = n;
+            this.nSquare = n*n;
+            numOpened = 0;
+            gridVals = new int[n*n];
+            if(typeUnion.equalsIgnoreCase("FAST")){
+                weighted = true;
+                unionFinder = new WeightedQuickUnionUF(nSquare);
+            }else{
+                unionFinder = new UF(nSquare);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        this.n = n;
-        this.nSquare = n*n;
-        numOpened = 0;
-        gridVals = new int[n*n];
     }
     /*
     *int 0 is closed black
     * int 1 is open white
     * int 2 is open blue
     * */
-    public Percolation(int n){
+    public Percolation(int n) {
         this(n, "SLOW");
     }
     public void open(int x, int y){
@@ -39,6 +46,16 @@ public class Percolation {
                 gridVals[p.getValue()] = 1;
             }
             connectPair(p);
+            addToLists(p);
+        }
+    }
+
+    private void addToLists(Pair p) {/*
+        int min = (bottom)? 0:(this.n*(this.n-1)), max = (!bottom)?this.nSquare: this.n;*/
+        if(p.getValue() < this.n && p.getValue() >= 0){
+            bottomElements.add(p);
+        }else if(p.getValue()<this.nSquare && p.getValue() >= (this.nSquare-1)){
+            topElements.add(p);
         }
     }
 
@@ -49,30 +66,12 @@ public class Percolation {
     private void connectPair(Pair pair) {
         List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair);
         for(Pair adjacentOpenNode : adjacentOpenNodes){
-            methodCaller(adjacentOpenNode.getValue(),pair.getValue(), "union");
+            if(weighted){
+                ((WeightedQuickUnionUF) unionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
+            }else{
+                ((UF) unionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
+            }
         }
-    }
-
-    private Object methodCaller(int value, int value1, String method) {
-        Class[] parameterTypes = new Class[2];
-        parameterTypes[0]= int.class;
-        parameterTypes[1]= int.class;
-        Object [] parameters = {value,value1};
-        if(unionFinder instanceof WeightedQuickUnionUF)
-            try {
-                Method m1 = WeightedQuickUnionUF.class.getMethod(method,parameterTypes);
-                return m1.invoke(unionFinder, parameters);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        else
-            try {
-                Method m1 = UF.class.getMethod(method,parameterTypes);
-                return m1.invoke(unionFinder, parameters);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
     }
 
     public boolean isOpen(int x, int y) {
@@ -81,16 +80,15 @@ public class Percolation {
     public boolean isFull(int x, int y) {
         return checkValidity(x,y) && checkForPath(new Pair(x, y, this.n));
     }
-    private boolean checkForPath(Pair finalPair) {
-        boolean result = false;
-        List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);
-        for(Pair adjacentOpenNode : adjacentOpenNodes){
-            if((boolean)methodCaller(adjacentOpenNode.getValue(), finalPair.getValue(), "connected")){
-                result = true;
-                break;
+    private boolean checkForPath(Pair finalPair) {/*
+        List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);*/
+        for(Pair adjacentOpenNode : topElements){
+            if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())
+                    : ((UF)unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())){
+                return true;
             }
         }
-        return result;
+        return false;
 
     }
 
@@ -117,18 +115,16 @@ public class Percolation {
         return isOpen(p.getRow(),p.getCol());
     }
 
-    public boolean percolates(){
-        boolean result = false;
-        List <Pair> openNodesBottomRow = getOpenNodesSurfaceOrBottom(true);
-        for (Pair anOpenNodesBottomRow : openNodesBottomRow) {
+    public boolean percolates(){/*
+        List <Pair> openNodesBottomRow = getOpenNodesSurfaceOrBottom(true);*/
+        for (Pair anOpenNodesBottomRow : bottomElements) {
             if (isFull(anOpenNodesBottomRow.getRow(), anOpenNodesBottomRow.getCol())) {
-                result = true;
-                break;
+                return true;
             }
         }
-        return result;
+        return false;
     }
-    private List<Pair> getOpenNodesSurfaceOrBottom(boolean bottom) {
+    /*private List<Pair> getOpenNodesSurfaceOrBottom(boolean bottom) {
         List<Pair> list = new ArrayList<>();
         int min = (bottom)? 0:(this.n*(this.n-1)), max = (!bottom)?this.nSquare: this.n;
         for (int i = min; i < max; i++) {
@@ -138,7 +134,7 @@ public class Percolation {
             }
         }
         return list;
-    }
+    }*///TODO:add lists for elements on top and bottom to prevent this make faster in isOpen
 
     public int countOpenCells() {
         return numOpened;
@@ -188,7 +184,7 @@ public class Percolation {
         try{
             In input = new In(args[0]);
             int n = input.readInt();
-            Percolation percolation = new Percolation(n);
+            Percolation percolation = new Percolation(n, "fast");
             input.readLine();
             while(input.hasNextLine()){
                 String s = input.readLine();

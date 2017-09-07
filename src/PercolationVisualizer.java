@@ -41,13 +41,13 @@ public class PercolationVisualizer {
 
         Percolation perc = new Percolation(N, "fast");
         draw(perc, N);
-        StdDraw.show(ANIM_DELAY);
+        StdDraw.show(/*ANIM_DELAY*/);
         while (!in.isEmpty()) {
             int i = in.readInt();
             int j = in.readInt();
             perc.open(i, j);
             draw(perc, N);
-            StdDraw.show(ANIM_DELAY);
+            StdDraw.show(/*ANIM_DELAY*/);
         }
         //perc.printBoard();
     }
