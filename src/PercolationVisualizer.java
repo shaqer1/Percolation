@@ -1,7 +1,7 @@
 import java.awt.*;
 
 public class PercolationVisualizer {
-    private static final int ANIM_DELAY = 100;
+    private static final int ANIM_DELAY = 1;
 
     public static void draw(Percolation perc, int N) {
         StdDraw.clear();
@@ -41,13 +41,13 @@ public class PercolationVisualizer {
 
         Percolation perc = new Percolation(N, "fast");
         draw(perc, N);
-        StdDraw.show(/*ANIM_DELAY*/);
+        StdDraw.show(ANIM_DELAY);
         while (!in.isEmpty()) {
             int i = in.readInt();
             int j = in.readInt();
             perc.open(i, j);
             draw(perc, N);
-            StdDraw.show(/*ANIM_DELAY*/);
+            StdDraw.show(ANIM_DELAY);
         }
         //perc.printBoard();
     }

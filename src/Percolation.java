@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
@@ -13,18 +14,24 @@ public class Percolation {
     private List<Pair> topElements = new ArrayList<>();
     private List<Pair> bottomElements = new ArrayList<>();
     private int numOpened;
+    private boolean percolates;
+    private Pair dummyBottom;
+    private Pair dummyTop;
 
-    public Percolation(int n, String typeUnion){
+    public Percolation(int n, String typeUnion){//TODO:if top digits match bottom true
         try{
+            percolates = false;
             this.n = n;
             this.nSquare = n*n;
+            dummyBottom = new Pair(this.nSquare +1, this.n);
+            dummyTop = new Pair(this.nSquare + 2, this.n);
             numOpened = 0;
             gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
                 weighted = true;
-                unionFinder = new WeightedQuickUnionUF(nSquare);
+                unionFinder = new WeightedQuickUnionUF(nSquare +3);
             }else{
-                unionFinder = new UF(nSquare);
+                unionFinder = new UF(nSquare+ 3);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -45,17 +52,31 @@ public class Percolation {
                 numOpened++;
                 gridVals[p.getValue()] = 1;
             }
-            connectPair(p);
+            loveThyNeighbor(p);
             addToLists(p);
         }
     }
 
-    private void addToLists(Pair p) {/*
-        int min = (bottom)? 0:(this.n*(this.n-1)), max = (!bottom)?this.nSquare: this.n;*/
+    private void addToLists(Pair p) {
+        Pair dummyToConnect = null;
+        boolean added = false;
         if(p.getValue() < this.n && p.getValue() >= 0){
             bottomElements.add(p);
-        }else if(p.getValue()<this.nSquare && p.getValue() >= (this.nSquare-1)){
+            added = true;
+            dummyToConnect = dummyBottom;
+        }else if(p.getValue()<this.nSquare && p.getValue() >= (this.nSquare-this.n)){
             topElements.add(p);
+            added = true;
+            dummyToConnect = dummyTop;
+        }
+        if(added && dummyToConnect != null){
+            if(weighted){
+                ((WeightedQuickUnionUF) unionFinder).union(p.getValue(),dummyToConnect.getValue());
+            }else{
+                ((UF) unionFinder).union(p.getValue(),dummyToConnect.getValue());
+            }
+        }else if (added){
+            StdOut.println("incorrect initialization of dummy bottom and tops");
         }
     }
 
@@ -63,9 +84,9 @@ public class Percolation {
         return x<this.n && x>=0 && y<this.n && y>=0;
     }
 
-    private void connectPair(Pair pair) {
+    private void loveThyNeighbor(Pair pair) {
         List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair);
-        for(Pair adjacentOpenNode : adjacentOpenNodes){
+        for(Pair adjacentOpenNode : adjacentOpenNodes){//TODO: update data member find
             if(weighted){
                 ((WeightedQuickUnionUF) unionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
             }else{
@@ -80,8 +101,7 @@ public class Percolation {
     public boolean isFull(int x, int y) {
         return checkValidity(x,y) && checkForPath(new Pair(x, y, this.n));
     }
-    private boolean checkForPath(Pair finalPair) {/*
-        List <Pair> adjacentOpenNodes = getOpenNodesSurfaceOrBottom(false);*/
+    private boolean checkForPath(Pair finalPair) {
         for(Pair adjacentOpenNode : topElements){
             if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())
                     : ((UF)unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())){
@@ -115,26 +135,19 @@ public class Percolation {
         return isOpen(p.getRow(),p.getCol());
     }
 
-    public boolean percolates(){/*
-        List <Pair> openNodesBottomRow = getOpenNodesSurfaceOrBottom(true);*/
+    public boolean percolates(){//TODO: adding wrong elements to bottom
+        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())
+                : ((UF)unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())){
+        }
+        if(percolates)
+            return true;
         for (Pair anOpenNodesBottomRow : bottomElements) {
             if (isFull(anOpenNodesBottomRow.getRow(), anOpenNodesBottomRow.getCol())) {
-                return true;
+                percolates = true;
             }
         }
-        return false;
+        return percolates;
     }
-    /*private List<Pair> getOpenNodesSurfaceOrBottom(boolean bottom) {
-        List<Pair> list = new ArrayList<>();
-        int min = (bottom)? 0:(this.n*(this.n-1)), max = (!bottom)?this.nSquare: this.n;
-        for (int i = min; i < max; i++) {
-            Pair p = new Pair(i,this.n);
-            if(isOpen(p.getRow(),p.getCol())){
-                list.add(p);
-            }
-        }
-        return list;
-    }*///TODO:add lists for elements on top and bottom to prevent this make faster in isOpen
 
     public int countOpenCells() {
         return numOpened;
@@ -147,7 +160,7 @@ public class Percolation {
         Pair(int row, int col, int n){
             this.row = row;
             this.col = col;
-            this.value = this.getRow()*n + this.getCol();
+            this.value = this.getCol()*n + this.getRow();
         }
 
         Pair(int value, int n) {
@@ -191,7 +204,7 @@ public class Percolation {
                 percolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
-            percolation.printBoard();
+            //percolation.printBoard();
             StdOut.println((percolation.percolates())?"Yes":"No");
             //percolation.printBoard();
         }catch (Exception e){
@@ -203,21 +216,21 @@ public class Percolation {
         StringBuilder s = new StringBuilder();
         for (int j = gridVals.length - 1; j >= 0; j--) {
             if (s.length() == 0) {
-                s = new StringBuilder("|\n");
+                s = new StringBuilder("\u001B[40m" + "|\n");
             }
             switch (gridVals[j]) {
                 case 0:
-                    s.insert(0, "black ");
+                    s.insert(0, "\u001B[40m" + "bk ");
                     break;
                 case 1:
-                    s.insert(0, "white ");
+                    s.insert(0, "\u001B[47m" + "wh ");
                     break;
                 case 2:
-                    s.insert(0, "blue  ");
+                    s.insert(0, "\u001B[40m" + "bl ");
                     break;
             }
             if (j%this.n == 0) {
-                s.insert(0, "| ");
+                s.insert(0, "\u001B[40m" + "| ");
                 System.out.print(s);
                 s = new StringBuilder();
             }
