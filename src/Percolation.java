@@ -12,8 +12,8 @@ public class Percolation {
     private Object isFullUnionFinder;
     private int numOpened;
     private boolean percolates;
-    private int dummyBottom;
-    private int dummyTop;
+    private int virtualBottom;
+    private int virtualTop;
 
     /*
     *int 0 is closed black
@@ -33,8 +33,8 @@ public class Percolation {
             percolates = false;
             this.n = n;
             this.nSquare = n*n;
-            dummyBottom = this.nSquare;
-            dummyTop = this.nSquare + 1;
+            virtualBottom = this.nSquare;
+            virtualTop = this.nSquare + 1;
             numOpened = 0;
             gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
@@ -64,9 +64,9 @@ public class Percolation {
             boolean bottom;
             if((bottom = p < this.n) || p < this.nSquare && p >= (this.nSquare - this.n)){
                 if(bottom){
-                    union(p, dummyBottom);
+                    union(p, virtualBottom);
                 }else{
-                    union(p,dummyTop);
+                    union(p, virtualTop);
                 }
             }
         }
@@ -75,11 +75,11 @@ public class Percolation {
     private void loveThyNeighbor(int x, int y) {
         int p = getCellValue(x,y);
         if(p + -1*this.n < this.nSquare && p + -1*this.n >=0
-                && gridVals[p+-1*this.n] !=0){
+                && isOpen(p+-1*this.n)/*&& gridVals[p+-1*this.n] !=0*/){
             union(p + -1*this.n,p);
         }
         if(p + this.n < this.nSquare && p + this.n >=0
-                && gridVals[p+this.n] !=0){
+                && isOpen(p+this.n)/*&& gridVals[p+this.n] !=0*/){
             union(p + this.n,p);
         }
         if((p-1)%this.n != this.n - 1 && isOpen(p-1)){
@@ -109,8 +109,8 @@ public class Percolation {
     }
     public boolean isFull(int x, int y) {
         int finalPair = getCellValue(x,y);
-        return checkValidity(x,y) && (weighted && visualize)?((WeightedQuickUnionUF) isFullUnionFinder).connected(dummyTop, finalPair)
-                : (!weighted && visualize) && ((QuickFindUF) isFullUnionFinder).connected(dummyTop, finalPair);
+        return checkValidity(x,y) && (weighted && visualize)?((WeightedQuickUnionUF) isFullUnionFinder).connected(virtualTop, finalPair)
+                : (!weighted && visualize) && ((QuickFindUF) isFullUnionFinder).connected(virtualTop, finalPair);
     }
 
     private int getCellValue(int x, int y) {
@@ -122,8 +122,8 @@ public class Percolation {
     }
 
     public boolean percolates(){
-        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(dummyTop, dummyBottom)
-                : ((QuickFindUF)unionFinder).connected(dummyTop, dummyBottom)){
+        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(virtualTop, virtualBottom)
+                : ((QuickFindUF)unionFinder).connected(virtualTop, virtualBottom)){
             percolates = true;
         }
         /*if(percolates) {
