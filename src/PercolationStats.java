@@ -14,6 +14,7 @@ public class PercolationStats {
                     perc.open(x/N,x%N);
                 }
                 //PercolationVisualizer.draw(perc,N);
+                //perc.printBoard();
                 estimates[i] = perc.countOpenCells()/(N*N + 0.0);
                 times[i] = System.currentTimeMillis() - expStart;
             }

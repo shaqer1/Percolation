@@ -20,7 +20,7 @@ public class PercolationVisualizer {
                 }
                 else
                     StdDraw.setPenColor(StdDraw.BLACK);
-                StdDraw.filledSquare(col + 0.5, row + 0.5, 0.45);
+                StdDraw.filledSquare(row + 0.5, col + 0.5, 0.45);
             }
         }
 

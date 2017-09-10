@@ -1,5 +1,5 @@
+import edu.princeton.cs.algs4.QuickFindUF;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.UF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.ArrayList;
@@ -11,27 +11,30 @@ public class Percolation {
     private int nSquare;
     private int [] gridVals;
     private Object unionFinder;
-    private List<Pair> topElements = new ArrayList<>();
-    private List<Pair> bottomElements = new ArrayList<>();
+    //private List<Pair> topElements = new ArrayList<>();
+    //private List<Pair> bottomElements = new ArrayList<>();
+    //private Object isFullUnionFinder;
     private int numOpened;
     private boolean percolates;
-    private Pair dummyBottom;
-    private Pair dummyTop;
+    private int dummyBottom;
+    private int dummyTop;
 
     public Percolation(int n, String typeUnion){//TODO:if top digits match bottom true
         try{
             percolates = false;
             this.n = n;
             this.nSquare = n*n;
-            dummyBottom = new Pair(this.nSquare +1, this.n);
-            dummyTop = new Pair(this.nSquare + 2, this.n);
+            dummyBottom = this.nSquare;
+            dummyTop = this.nSquare + 1;
             numOpened = 0;
             gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
                 weighted = true;
                 unionFinder = new WeightedQuickUnionUF(nSquare +3);
+                //isFullUnionFinder = new WeightedQuickUnionUF(nSquare + 3);
             }else{
-                unionFinder = new UF(nSquare+ 3);
+                unionFinder = new QuickFindUF(nSquare+ 3);
+                //isFullUnionFinder = new QuickFindUF(nSquare + 3);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -47,105 +50,124 @@ public class Percolation {
     }
     public void open(int x, int y){
         if(checkValidity(x,y)){
-            Pair p = new Pair(x, y, this.n);
-            if(gridVals[p.getValue()]  < 1) {
+            int p = getCellValue(x, y);
+            if(gridVals[p]  < 1) {
                 numOpened++;
-                gridVals[p.getValue()] = 1;
+                gridVals[p] = 1;
             }
-            loveThyNeighbor(p);
-            addToLists(p);
+            loveThyNeighbor(x,y);
+            addToLists(getCellValue(x,y));
         }
     }
 
-    private void addToLists(Pair p) {
-        Pair dummyToConnect = null;
+    private void loveThyNeighbor(int x, int y) {
+        List <Integer> adjacentOpenNodes = getAdjacentOpenNodes(getCellValue(x, y));
+        for(int adjacentOpenNode : adjacentOpenNodes){
+            if(weighted){
+                ((WeightedQuickUnionUF) unionFinder).union(adjacentOpenNode,getCellValue(x,y));
+                //((WeightedQuickUnionUF) isFullUnionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
+            }else{
+                ((QuickFindUF) unionFinder).union(adjacentOpenNode,getCellValue(x,y));
+                //((QuickFindUF) isFullUnionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
+            }
+        }
+    }
+
+    private List<Integer> getAdjacentOpenNodes(int p) {
+        List <Integer> adjacentList = new ArrayList<>();
+        int [] arr = {-1*this.n,this.n};
+        for (int i : arr) {
+            if(p + i < this.nSquare && p + i >=0
+                    && gridVals[p+i] !=0){
+                adjacentList.add(p+i);
+            }
+        }
+        if((p-1)%this.n != this.n - 1 && isOpen(p-1)){
+            adjacentList.add(p-1);
+        }
+        if((p+1)%this.n != 0 && isOpen(p+1)){
+            adjacentList.add(p+1);
+        }
+        return adjacentList;
+    }
+
+    private void addToLists(int p) {
+        int dummyToConnect = -1;
         boolean added = false;
-        if(p.getValue() < this.n && p.getValue() >= 0){
-            bottomElements.add(p);
+        if(p < this.n && p >= 0){
+            //bottomElements.add(p);
             added = true;
             dummyToConnect = dummyBottom;
-        }else if(p.getValue()<this.nSquare && p.getValue() >= (this.nSquare-this.n)){
-            topElements.add(p);
+        }else if(p<this.nSquare && p >= (this.nSquare-this.n)){
+            //topElements.add(p);
             added = true;
             dummyToConnect = dummyTop;
-        }
-        if(added && dummyToConnect != null){
             if(weighted){
-                ((WeightedQuickUnionUF) unionFinder).union(p.getValue(),dummyToConnect.getValue());
+                //((WeightedQuickUnionUF) isFullUnionFinder).union(p.getValue(),dummyToConnect.getValue());
             }else{
-                ((UF) unionFinder).union(p.getValue(),dummyToConnect.getValue());
+                //((QuickFindUF) isFullUnionFinder).union(p.getValue(),dummyToConnect.getValue());
+            }
+        }
+        if(added && dummyToConnect != -1){
+            if(weighted){
+                ((WeightedQuickUnionUF) unionFinder).union(p,dummyToConnect);
+            }else{
+                ((QuickFindUF) unionFinder).union(p,dummyToConnect);
             }
         }else if (added){
             StdOut.println("incorrect initialization of dummy bottom and tops");
         }
+        /*if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())
+                : ((UF)unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())){
+            printBoard();
+            StdOut.println("percolates");
+        }*/
     }
 
     private boolean checkValidity(int x, int y) {
         return x<this.n && x>=0 && y<this.n && y>=0;
     }
-
-    private void loveThyNeighbor(Pair pair) {
-        List <Pair> adjacentOpenNodes = getAdjacentOpenNodes(pair);
-        for(Pair adjacentOpenNode : adjacentOpenNodes){//TODO: update data member find
-            if(weighted){
-                ((WeightedQuickUnionUF) unionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
-            }else{
-                ((UF) unionFinder).union(adjacentOpenNode.getValue(),pair.getValue());
-            }
-        }
-    }
-
     public boolean isOpen(int x, int y) {
-        return checkValidity(x,y) && gridVals[new Pair(x,y,this.n).getValue()] >= 1;
+        return checkValidity(x,y) && gridVals[getCellValue(x,y)] >= 1;
     }
     public boolean isFull(int x, int y) {
-        return checkValidity(x,y) && checkForPath(new Pair(x, y, this.n));
+        int finalPair = getCellValue(x,y);
+        return checkValidity(x,y) && (weighted)?((WeightedQuickUnionUF) /*isFullUnionFinder*/unionFinder).connected(dummyTop, finalPair)
+                : ((QuickFindUF)/*isFullUnionFinder*/unionFinder).connected(dummyTop, finalPair)/*checkForPath(finalPair)*/;
     }
-    private boolean checkForPath(Pair finalPair) {
-        for(Pair adjacentOpenNode : topElements){
+
+    private int getCellValue(int x, int y) {
+        return  y*n + x;
+    }
+
+    /*private boolean checkForPath(Pair finalPair) {
+        *//*for(Pair adjacentOpenNode : topElements){
             if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())
-                    : ((UF)unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())){
+                    : ((QuickFindUF)unionFinder).connected(adjacentOpenNode.getValue(), finalPair.getValue())){
                 return true;
             }
-        }
+        }*//*
         return false;
 
-    }
+    }*/
 
-    private List<Pair> getAdjacentOpenNodes(Pair p) {
-        List <Pair> adjacentList = new ArrayList<>();
-        int [] arr = {-1*this.n,this.n};
-        for (int i : arr) {
-            if(p.getValue() + i < this.nSquare && p.getValue() + i >=0
-                    && gridVals[p.getValue()+i] !=0){
-                    adjacentList.add(new Pair(p.getValue()+i, this.n));
-            }
-        }
-        if((p.getValue()-1)%this.n != this.n - 1 && isOpen(new Pair(p.getValue()-1,this.n))){
-            adjacentList.add(new Pair(p.getValue()-1, this.n));
-
-        }
-        if((p.getValue()+1)%this.n != 0 && isOpen(new Pair(p.getValue()+1,this.n))){
-            adjacentList.add(new Pair(p.getValue()+1, this.n));
-        }
-        return adjacentList;
-    }
-
-    private boolean isOpen(Pair p) {
-        return isOpen(p.getRow(),p.getCol());
+    private boolean isOpen(int p) {
+        return isOpen(p%this.n,p/this.n);
     }
 
     public boolean percolates(){//TODO: adding wrong elements to bottom
-        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())
-                : ((UF)unionFinder).connected(dummyTop.getValue(), dummyBottom.getValue())){
+        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(dummyTop, dummyBottom)
+                : ((QuickFindUF)unionFinder).connected(dummyTop, dummyBottom)){
+            percolates = true;
         }
-        if(percolates)
+        /*if(percolates) {
             return true;
+        }
         for (Pair anOpenNodesBottomRow : bottomElements) {
             if (isFull(anOpenNodesBottomRow.getRow(), anOpenNodesBottomRow.getCol())) {
                 percolates = true;
             }
-        }
+        }*/
         return percolates;
     }
 
@@ -153,7 +175,7 @@ public class Percolation {
         return numOpened;
     }
 
-    private class Pair {
+    /*private class Pair {
         private int row;
         private int col;
         private int value;
@@ -164,7 +186,7 @@ public class Percolation {
         }
 
         Pair(int value, int n) {
-            this(value/n,value%n, n);
+            this(value%n,value/n, n);
         }
 
         int getRow() {
@@ -190,7 +212,7 @@ public class Percolation {
         int getValue() {
             return value;
         }
-    }
+    }*/
 
     public static void main(String[] args) {
         //System.out.println(args[0]);
@@ -216,21 +238,21 @@ public class Percolation {
         StringBuilder s = new StringBuilder();
         for (int j = gridVals.length - 1; j >= 0; j--) {
             if (s.length() == 0) {
-                s = new StringBuilder("\u001B[40m" + "|\n");
+                s = new StringBuilder("\u001B[0m" + "|\n");
             }
             switch (gridVals[j]) {
                 case 0:
-                    s.insert(0, "\u001B[40m" + "bk ");
+                    s.insert(0, "\u001B[0m" + "bk ");
                     break;
                 case 1:
-                    s.insert(0, "\u001B[47m" + "wh ");
+                    s.insert(0, "\u001B[40m" + "wh ");
                     break;
                 case 2:
-                    s.insert(0, "\u001B[40m" + "bl ");
+                    s.insert(0, "\u001B[0m" + "bl ");
                     break;
             }
             if (j%this.n == 0) {
-                s.insert(0, "\u001B[40m" + "| ");
+                s.insert(0, "\u001B[0m" + "| ");
                 System.out.print(s);
                 s = new StringBuilder();
             }
