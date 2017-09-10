@@ -18,8 +18,8 @@ public class PercolationAnalyzer {
         int index = 0;
         boolean fastSpeed;
         HashMap <String, Double> dataToPlot = new HashMap<>();
-        writeToFile("N,Time\n", "nVsTimeSlow.csv", false);
-        writeToFile("N,Time\n", "nVsTimeFast.csv", false);
+        writeToFile("N,Time,Mean Threshold\n", "nVsTimeSlow.csv", false);
+        writeToFile("N,Time,Mean Threshold\n", "nVsTimeFast.csv", false);
         long timeStart = System.currentTimeMillis();
         for (int i = 0; i < valuesOfN.length*2; i++) {
             if(i == valuesOfN.length){
