@@ -121,7 +121,7 @@ public class Percolation {
     }
 
     public boolean isOpen(int x, int y) {
-        return isOpen(y*this.n+x);
+        return opened.contains(y*this.n+x);
     }
 
     private boolean isOpen(int p) {
