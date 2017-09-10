@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.QuickFindUF;
 import edu.princeton.cs.algs4.StdOut;
+//import edu.princeton.cs.algs4.QuickUnionUF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.HashSet;
@@ -37,20 +38,20 @@ public class Percolation {
             opened = new HashSet<>();
             this.n = n;
             this.nSquare = n*n;
-            virtualBottom = this.nSquare;
-            virtualTop = this.nSquare + 1;
+            virtualBottom = this.nSquare+1;
+            virtualTop = this.nSquare;
             numOpened = 0;
             gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
                 weighted = true;
-                unionFinder = new WeightedQuickUnionUF(nSquare +3);
+                unionFinder = new WeightedQuickUnionUF(nSquare +2);
                 if(visualize){
-                    isFullUnionFinder = new WeightedQuickUnionUF(nSquare + 3);
+                    isFullUnionFinder = new WeightedQuickUnionUF(nSquare + 2);
                 }
             }else{
-                unionFinder = new QuickFindUF(nSquare+ 3);
+                unionFinder = new QuickFindUF(nSquare+ 2);
                 if(visualize) {
-                    isFullUnionFinder = new QuickFindUF(nSquare + 3);
+                    isFullUnionFinder = new QuickFindUF(nSquare + 2);
                 }
             }
         }catch (Exception e){
@@ -79,12 +80,12 @@ public class Percolation {
 
     private void loveThyNeighbor(int x, int y) {
         int p = getCellValue(x,y);
-        if(p + -1*this.n < this.nSquare && p + -1*this.n >=0
-                && isOpen(p+-1*this.n)/*&& gridVals[p+-1*this.n] !=0*/){
+        if(/*p + -1*this.n < this.nSquare && p + -1*this.n >=0
+                &&*/ isOpen(p+-1*this.n)/*&& gridVals[p+-1*this.n] !=0*/){
             union(p + -1*this.n,p);
         }
-        if(p + this.n < this.nSquare && p + this.n >=0
-                && isOpen(p+this.n)/*&& gridVals[p+this.n] !=0*/){
+        if(/*p + this.n < this.nSquare && p + this.n >=0
+                &&*/ isOpen(p+this.n)/*&& gridVals[p+this.n] !=0*/){
             union(p + this.n,p);
         }
         if((p-1)%this.n != this.n - 1 && isOpen(p-1)){
@@ -145,12 +146,12 @@ public class Percolation {
     public static void main(String[] args) {
         //System.out.println(args[0]);
         try{
-            In input = new In(args[0]);
-            int n = input.readInt();
+            //In input = new In(args[0]);
+            int n = StdIn.readInt();
             Percolation percolation = new Percolation(n, "slow");
-            input.readLine();
-            while(input.hasNextLine()){
-                String s = input.readLine();
+            StdIn.readLine();
+            while(StdIn.hasNextLine()){
+                String s = StdIn.readLine();
                 percolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }

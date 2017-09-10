@@ -1,5 +1,5 @@
 public class PercolationStats {
-    public static String getStats(int N, int T, String type){
+    static String getStats(int N, int T, String type){
         String s = "";
         try{
             double [] estimates = new double[T];
