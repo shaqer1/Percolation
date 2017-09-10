@@ -99,6 +99,10 @@ public class Percolation {
         }
     }
 
+    private boolean checkValidity(int val){
+        return val< nSquare && val >= 0;
+    }
+
     private boolean checkValidity(int x, int y) {
         return x<this.n && x>=0 && y<this.n && y>=0;
     }
@@ -116,7 +120,7 @@ public class Percolation {
     }
 
     private boolean isOpen(int p) {
-        return isOpen(p%this.n,p/this.n);
+        return checkValidity(p) && gridVals[p] >=1;
     }
 
     public boolean percolates(){

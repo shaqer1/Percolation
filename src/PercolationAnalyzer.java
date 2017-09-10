@@ -49,7 +49,7 @@ public class PercolationAnalyzer {
 
     private static String getString(HashMap<String, Double> dataToPlot) {
         return String.valueOf(dataToPlot.get("data")) + "," +
-                dataToPlot.get("time") + "," +
+                dataToPlot.get("mean time") + "," +
                 dataToPlot.get("mean threshold") + "\n";
     }
 
@@ -67,13 +67,5 @@ public class PercolationAnalyzer {
             e.printStackTrace();
         }
         return response;
-    }
-
-    private static void putInHash(HashMap<String, List<Double>> hashMap, String dataKey, double data) {
-        if(hashMap.containsKey(dataKey)){
-            hashMap.get(dataKey).add(data);
-        }else{
-            hashMap.put(dataKey,new ArrayList<>(Collections.singletonList(data)));
-        }
     }
 }
