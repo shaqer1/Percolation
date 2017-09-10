@@ -38,8 +38,8 @@ public class Percolation {
             opened = new HashSet<>();
             this.n = n;
             this.nSquare = n*n;
-            virtualBottom = this.nSquare+1;
-            virtualTop = this.nSquare;
+            virtualBottom = this.nSquare;
+            virtualTop = this.nSquare + 1;
             //numOpened = 0;
             //gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
@@ -115,12 +115,9 @@ public class Percolation {
         return checkValidity(x,y) && (weighted && visualize)?((WeightedQuickUnionUF) isFullUnionFinder).connected(virtualTop, finalPair)
                 : (!weighted && visualize) && ((QuickFindUF) isFullUnionFinder).connected(virtualTop, finalPair);
     }
+
     private int getCellValue(int x, int y) {
         return  y*n + x;
-    }
-
-    public boolean isOpen(int x, int y) {
-        return isOpen(y*this.n+x);
     }
 
     private boolean isOpen(int p) {
