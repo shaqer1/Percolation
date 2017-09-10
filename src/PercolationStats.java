@@ -4,18 +4,18 @@ public class PercolationStats {
         try{
             double [] estimates = new double[T];
             double [] times = new double[T];
+            Percolation percolation;
             long timeTotalInitial = System.currentTimeMillis();
-            Percolation perc = new Percolation(N);
             for (int i = 0; i < T; i++) {
                 long expStart = System.currentTimeMillis();
-                perc = new Percolation(N, type);
-                while(!perc.percolates()){
+                percolation = new Percolation(N, type);
+                while(!percolation.percolates()){
                     int x = (int) StdRandom.uniform(0, N*N);
-                    perc.open(x/N,x%N);
+                    percolation.open(x/N,x%N);
                 }
-                //PercolationVisualizer.draw(perc,N);
-                //perc.printBoard();
-                estimates[i] = perc.countOpenCells()/(N*N + 0.0);
+                //PercolationVisualizer.draw(percolation,N);
+                //percolation.printBoard();
+                estimates[i] = percolation.countOpenCells()/(N*N + 0.0);
                 times[i] = System.currentTimeMillis() - expStart;
             }
             long timeTotalFinal = System.currentTimeMillis();

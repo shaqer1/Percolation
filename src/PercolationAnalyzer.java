@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PercolationAnalyzer {
     public static void main(String[] args) {
-        int [] valuesOfN = {10,25,50,100,250/*,500*/};
+        int [] valuesOfN = {10,25,50,100,250,500};
         int T = 30;
         String s = "fast";
         String s1 = "slow";
@@ -48,11 +48,9 @@ public class PercolationAnalyzer {
     }
 
     private static String getString(HashMap<String, Double> dataToPlot) {
-        StringBuilder s = new StringBuilder();
-        double N = dataToPlot.get("data");
-        double times = dataToPlot.get("time");
-        s.append(N).append(",").append(times).append("\n");
-        return s.toString();
+        return String.valueOf(dataToPlot.get("data")) + "," +
+                dataToPlot.get("time") + "," +
+                dataToPlot.get("mean threshold") + "\n";
     }
 
     private static HashMap<String, Double> getData(HashMap<String, Double> response, String stats, int N) {
