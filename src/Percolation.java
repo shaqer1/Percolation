@@ -120,6 +120,10 @@ public class Percolation {
         return  y*n + x;
     }
 
+    public boolean isOpen(int x, int y) {
+        return isOpen(y*this.n+x);
+    }
+
     private boolean isOpen(int p) {
         return opened.contains(p);
         //return isOpen(p%this.n,p/this.n);
