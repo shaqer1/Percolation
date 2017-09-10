@@ -2,6 +2,8 @@ import edu.princeton.cs.algs4.QuickFindUF;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+import java.util.HashSet;
+
 public class Percolation {
     private boolean visualize = false;
     private int n;
@@ -10,6 +12,7 @@ public class Percolation {
     private int [] gridVals;
     private Object unionFinder;
     private Object isFullUnionFinder;
+    private HashSet <Integer> opened;
     private int numOpened;
     private boolean percolates;
     private int virtualBottom;
@@ -31,6 +34,7 @@ public class Percolation {
         try{
             this.visualize = visualize;
             percolates = false;
+            opened = new HashSet<>();
             this.n = n;
             this.nSquare = n*n;
             virtualBottom = this.nSquare;
@@ -59,6 +63,7 @@ public class Percolation {
             if(gridVals[p]  < 1) {
                 numOpened++;
                 gridVals[p] = 1;
+                opened.add(p);
             }
             loveThyNeighbor(x,y);
             boolean bottom;
@@ -104,21 +109,22 @@ public class Percolation {
     private boolean checkValidity(int x, int y) {
         return x<this.n && x>=0 && y<this.n && y>=0;
     }
-    public boolean isOpen(int x, int y) {
-        return checkValidity(x,y) && gridVals[getCellValue(x,y)] >= 1;
-    }
     public boolean isFull(int x, int y) {
         int finalPair = getCellValue(x,y);
         return checkValidity(x,y) && (weighted && visualize)?((WeightedQuickUnionUF) isFullUnionFinder).connected(virtualTop, finalPair)
                 : (!weighted && visualize) && ((QuickFindUF) isFullUnionFinder).connected(virtualTop, finalPair);
     }
-
     private int getCellValue(int x, int y) {
         return  y*n + x;
     }
 
+    public boolean isOpen(int x, int y) {
+        return isOpen(y*this.n+x);
+    }
+
     private boolean isOpen(int p) {
-        return isOpen(p%this.n,p/this.n);
+        return opened.contains(p);
+        //return isOpen(p%this.n,p/this.n);
     }
 
     public boolean percolates(){
