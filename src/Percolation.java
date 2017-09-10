@@ -10,11 +10,11 @@ public class Percolation {
     private int n;
     private boolean weighted = false;
     private int nSquare;
-    private int [] gridVals;
+    //private int [] gridVals;
     private Object unionFinder;
     private Object isFullUnionFinder;
     private HashSet <Integer> opened;
-    private int numOpened;
+    //private int numOpened;
     private boolean percolates;
     private int virtualBottom;
     private int virtualTop;
@@ -40,8 +40,8 @@ public class Percolation {
             this.nSquare = n*n;
             virtualBottom = this.nSquare+1;
             virtualTop = this.nSquare;
-            numOpened = 0;
-            gridVals = new int[n*n];
+            //numOpened = 0;
+            //gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
                 weighted = true;
                 unionFinder = new WeightedQuickUnionUF(nSquare +2);
@@ -61,9 +61,9 @@ public class Percolation {
     public void open(int x, int y){
         if(checkValidity(x,y)){
             int p = getCellValue(x, y);
-            if(gridVals[p]  < 1) {
-                numOpened++;
-                gridVals[p] = 1;
+            if(!opened.contains(p)/*gridVals[p]  < 1*/) {
+                //numOpened++;
+                //gridVals[p] = 1;
                 opened.add(p);
             }
             loveThyNeighbor(x,y);
@@ -140,7 +140,7 @@ public class Percolation {
     }
 
     public int countOpenCells() {
-        return numOpened;
+        return opened.size();
     }
 
     public static void main(String[] args) {
@@ -163,7 +163,7 @@ public class Percolation {
         }
     }
 
-    public void printBoard() {
+    /*public void printBoard() {
         StringBuilder s = new StringBuilder();
         for (int j = gridVals.length - 1; j >= 0; j--) {
             if (s.length() == 0) {
@@ -189,5 +189,5 @@ public class Percolation {
         System.out.println("_________________________________" +
                 "\n---------------------------------" +
                 "\n_________________________________\n");
-    }
+    }*/
 }
