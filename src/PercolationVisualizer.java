@@ -9,7 +9,6 @@ public class PercolationVisualizer {
         StdDraw.setXscale(0, N);
         StdDraw.setYscale(0, N);
         StdDraw.filledSquare(N/2.0, N/2.0, N/2.0);
-
         for (int row = 0; row < N; row++) {
             for (int col = 0; col < N; col++) {
                 if (perc.isFull(row, col)) {
@@ -36,10 +35,8 @@ public class PercolationVisualizer {
     public static void main(String[] args) {
         In in = new In(args[0]);      // input file
         int N = in.readInt();         // N-by-N percolation system
-
         StdDraw.show(0);
-
-        Percolation perc = new Percolation(N, "fast", true);
+        Percolation perc = new Percolation(N, "fast");
         draw(perc, N);
         StdDraw.show(ANIM_DELAY);
         while (!in.isEmpty()) {
