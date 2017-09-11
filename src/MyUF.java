@@ -20,10 +20,10 @@ public class MyUF {
         int pID = find(p);
         int qID = find(q);
         int idToCompare = (pID < qID)?pID:qID;
+        if (pID == qID) return;
         int idToChange = (pID < qID)?qID:pID;
 // Nothing to do if p and q are already
         //in the same component.
-        if (pID == qID) return;
 // Rename p’s component to q’s name.
         for (int i = 0; i < id.length; i++)
             if (id[i] == idToCompare) id[i] = idToChange;

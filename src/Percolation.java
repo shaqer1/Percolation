@@ -48,7 +48,7 @@ public class Percolation {
                 numOpened++;
                 gridVals[p] = 1;
             }
-            loveThyNeighbor(x,y);
+            loveThyNeighbor(p);
             if(p < this.nSquare && p >= (this.nSquare - this.n)){
                 union(p, virtualTop);
             }
@@ -59,8 +59,7 @@ public class Percolation {
         }
     }
 
-    private void loveThyNeighbor(int x, int y) {
-        int p = getCellValue(x,y);
+    private void loveThyNeighbor(int p) {
         if(isOpen(p+-1*this.n)){
             union(p + -1*this.n,p);
         }
