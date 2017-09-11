@@ -12,7 +12,7 @@ public class Percolation {
     private Object isFullUnionFinder;
     private int numOpened;
     private boolean percolates;
-    private int virtualBottom;
+    //private int virtualBottom;
     private int virtualTop;
 
     /*
@@ -24,7 +24,7 @@ public class Percolation {
         this(n, "Fast");
     }
 
-    public Percolation(int n, String typeUnion){//TODO:hash and dont call union
+    public Percolation(int n, String typeUnion){
         this(n,typeUnion,false);
     }
     public Percolation(int n, String typeUnion, boolean visualize){
@@ -33,20 +33,20 @@ public class Percolation {
             percolates = false;
             this.n = n;
             this.nSquare = n*n;
-            virtualBottom = this.nSquare+1;
+            //virtualBottom = this.nSquare+1;
             virtualTop = this.nSquare;
             numOpened = 0;
             gridVals = new int[n*n];
             if(typeUnion.equalsIgnoreCase("FAST")){
                 weighted = true;
-                unionFinder = new WeightedQuickUnionUF(nSquare +2);
+                unionFinder = new WeightedQuickUnionUF(nSquare +1);
                 if(visualize){
-                    isFullUnionFinder = new WeightedQuickUnionUF(nSquare + 2);
+                    isFullUnionFinder = new WeightedQuickUnionUF(nSquare + 1);
                 }
             }else{
-                unionFinder = new MyUF(nSquare+ 2);
+                unionFinder = new MyUF(nSquare+ 1);
                 if(visualize) {
-                    isFullUnionFinder = new MyUF(nSquare + 2);
+                    isFullUnionFinder = new MyUF(nSquare + 1);
                 }
             }
         }catch (Exception e){
@@ -61,9 +61,9 @@ public class Percolation {
                 gridVals[p] = 1;
             }
             loveThyNeighbor(x,y);
-            if(p < this.n && !visualize){
+            /*if(p < this.n && !visualize){
                 union(p, virtualBottom);
-            }else if(p < this.nSquare && p >= (this.nSquare - this.n)){
+            }else */if(p < this.nSquare && p >= (this.nSquare - this.n)){
                 union(p, virtualTop);
             }
         }
@@ -138,9 +138,11 @@ public class Percolation {
         if(percolates) {
             return true;
         }
-        if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(virtualTop, virtualBottom)
-                : ((MyUF)unionFinder).connected(virtualTop, virtualBottom)){
-            percolates = true;
+        for (int i = 0; i < this.n; i++) {
+            if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(virtualTop, i)
+                    : ((MyUF)unionFinder).connected(virtualTop, i)){
+                return true;
+            }
         }
         return percolates;
     }
