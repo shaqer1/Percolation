@@ -5,9 +5,9 @@ public class PercolationStats {
             double [] estimates = new double[T];
             double [] times = new double[T];
             Percolation percolation;
-            long timeTotalInitial = System.currentTimeMillis();
+            long timeTotalInitial = System.nanoTime();
             for (int i = 0; i < T; i++) {
-                long expStart = System.currentTimeMillis();
+                long expStart = System.nanoTime();
                 percolation = new Percolation(N, type);
                 while(!percolation.percolates()){
                     int x = (int) StdRandom.uniform(0, N*N);
@@ -16,14 +16,14 @@ public class PercolationStats {
                 //PercolationVisualizer.draw(percolation,N);
                 //percolation.printBoard();
                 estimates[i] = percolation.countOpenCells()/(N*N + 0.0);
-                times[i] = System.currentTimeMillis() - expStart;
+                times[i] = ((System.nanoTime() - expStart)/1000000000.0);
             }
-            long timeTotalFinal = System.currentTimeMillis();
-            s += String.format("mean threshold=%.9f\n", StdStats.mean(estimates));
-            s += String.format("std dev=%.9f\n", StdStats.stddev(estimates));
-            s += "time=" + (timeTotalFinal-timeTotalInitial) + "\n";
-            s += String.format("mean time=%.9f\n", StdStats.mean(times));
-            s += String.format("stddev time=%.9f\n", StdStats.stddev(times));
+            long timeTotalFinal = System.nanoTime();
+            s += String.format("mean threshold=%.16f\n", StdStats.mean(estimates));
+            s += String.format("std dev=%.18f\n", StdStats.stddev(estimates));
+            s += "time=" + ((timeTotalFinal-timeTotalInitial)/1000000000.0) + "\n";
+            s += String.format("mean time=%.18f\n", StdStats.mean(times));
+            s += String.format("stddev time=%.18f\n", StdStats.stddev(times));
         }catch(Exception e){
             e.printStackTrace();
         }
