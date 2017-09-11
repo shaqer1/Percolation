@@ -2,8 +2,6 @@ import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-import java.util.ArrayList;
-
 public class Percolation {
     private int n;
     private boolean weighted = false;
