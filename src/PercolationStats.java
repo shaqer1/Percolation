@@ -15,7 +15,7 @@ public class PercolationStats {
                 }
                 //PercolationVisualizer.draw(percolation,N);
                 //percolation.printBoard();
-                estimates[i] = percolation.countOpenCells()/(N*N + 0.0);
+                estimates[i] = 0.4*(percolation.countOpenCells()/(N*N + 0.0));
                 times[i] = ((System.nanoTime() - expStart)/1000000000.0);
             }
             long timeTotalFinal = System.nanoTime();
