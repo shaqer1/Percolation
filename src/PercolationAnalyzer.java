@@ -29,6 +29,9 @@ public class PercolationAnalyzer {
             fastSpeed = i >= valuesOfN.length;
             dataToPlot  =  getData(dataToPlot ,PercolationStats.getStats(valuesOfN[index],T,(fastSpeed)?s1:s), valuesOfN[index]);
             index++;
+            if(valuesOfN[index] == 500 && !fastSpeed){
+                System.out.println("total 500 speed" + dataToPlot.get("time"));
+            }
             writeToFile(getString(dataToPlot),(fastSpeed)?"nVsTimeSlow.csv":"nVsTimeFast.csv", true);
             dataToPlot.clear();
         }
