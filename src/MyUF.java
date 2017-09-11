@@ -19,12 +19,14 @@ public class MyUF {
         // Put p and q into the same component.
         int pID = find(p);
         int qID = find(q);
+        int idToCompare = (pID < qID)?pID:qID;
+        int idToChange = (pID < qID)?qID:pID;
 // Nothing to do if p and q are already
         //in the same component.
         if (pID == qID) return;
 // Rename p’s component to q’s name.
         for (int i = 0; i < id.length; i++)
-            if (id[i] == pID) id[i] = qID;
+            if (id[i] == idToCompare) id[i] = idToChange;
         count--;
     }
     // See page 222 (quick-find),page 224 (quick-union) andpage 228 (weighted).

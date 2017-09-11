@@ -21,7 +21,7 @@ public class Percolation {
     * int 2 is open blue
     * */
     public Percolation(int n) {
-        this(n, "SLOW");
+        this(n, "Fast");
     }
 
     public Percolation(int n, String typeUnion){//TODO:hash and dont call union
@@ -61,13 +61,10 @@ public class Percolation {
                 gridVals[p] = 1;
             }
             loveThyNeighbor(x,y);
-            boolean bottom;
-            if((bottom = p < this.n) || p < this.nSquare && p >= (this.nSquare - this.n)){
-                if(bottom){
-                    union(p, virtualBottom);
-                }else{
-                    union(p, virtualTop);
-                }
+            if(p < this.n && !visualize){
+                union(p, virtualBottom);
+            }else if(p < this.nSquare && p >= (this.nSquare - this.n)){
+                union(p, virtualTop);
             }
         }
     }
@@ -111,8 +108,22 @@ public class Percolation {
     }
     public boolean isFull(int x, int y) {
         int finalPair = getCellValue(x,y);
-        return checkValidity(x,y) && (weighted && visualize)?((WeightedQuickUnionUF) isFullUnionFinder).connected(virtualTop, finalPair)
-                : (!weighted && visualize) && ((MyUF) isFullUnionFinder).connected(virtualTop, finalPair);
+        if(checkValidity(x,y)){
+            boolean bottom = false,connected;
+            if(finalPair < this.n){
+                bottom = true;
+            }
+            if(weighted && visualize){
+                connected = ((WeightedQuickUnionUF) isFullUnionFinder).connected(virtualTop, finalPair);
+                percolates = percolates || (bottom && (connected));
+                return connected;
+            }else if(!weighted && visualize){
+                connected = ((MyUF) isFullUnionFinder).connected(virtualTop, finalPair);
+                percolates = percolates || (bottom && (connected));
+                return connected;
+            }
+        }
+        return false;
     }
 
     private int getCellValue(int x, int y) {
@@ -124,13 +135,13 @@ public class Percolation {
     }
 
     public boolean percolates(){
+        if(percolates) {
+            return true;
+        }
         if((weighted)?((WeightedQuickUnionUF) unionFinder).connected(virtualTop, virtualBottom)
                 : ((MyUF)unionFinder).connected(virtualTop, virtualBottom)){
             percolates = true;
         }
-        /*if(percolates) {
-            return true;
-        }*/
         return percolates;
     }
 
@@ -141,12 +152,12 @@ public class Percolation {
     public static void main(String[] args) {
         //System.out.println(args[0]);
         try{
-            //In input = new In(args[0]);
-            int n = StdIn.readInt();
-            Percolation percolation = new Percolation(n, "slow");
-            StdIn.readLine();
-            while(StdIn.hasNextLine()){
-                String s = StdIn.readLine();
+            In input = new In(args[0]);
+            int n = input.readInt();
+            Percolation percolation = new Percolation(n, "fast");
+            input.readLine();
+            while(input.hasNextLine()){
+                String s = input.readLine();
                 percolation.open(Integer.parseInt(s.substring(0,s.indexOf(" "))),
                         Integer.parseInt(s.substring(s.indexOf(" ")+1)));
             }
