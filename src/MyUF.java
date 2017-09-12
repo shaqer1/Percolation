@@ -1,15 +1,15 @@
 public class MyUF {
     private int[] id; // access to component id (site indexed)
     private int count; // number of components
-    private int[] freq;
+    //private int[] freq;
     public MyUF(int N)
     { // Initialize component id array.
         count = N;
-        id = new int[N];
-        freq = new int[N];
+        id = new int[N];/*
+        freq = new int[N];*/
         for (int i = 0; i < N; i++){
-            id[i] = i;
-            freq[i] = 1;
+            id[i] = i;/*
+            freq[i] = 1;*/
         }
     }
     public int count()
@@ -24,16 +24,16 @@ public class MyUF {
         int pID = find(p);
         int qID = find(q);
         if (pID == qID) return;
-        boolean less = freq[pID] < freq[qID];
+        /*boolean less = freq[pID] < freq[qID];
         int idToCompare = (less)?pID:qID;
-        int idToChange = (less)?qID:pID;
+        int idToChange = (less)?qID:pID;*/
 // Nothing to do if p and q are already
         //in the same component.
 // Rename p’s component to q’s name.
-        freq[idToChange]+=freq[idToCompare];
+        //freq[idToChange]+=freq[idToCompare];
         for (int i = 0; i < id.length; i++)
-            if (id[i] == idToCompare) {
-                id[i] = idToChange;
+            if (id[i] == pID) {
+                id[i] = qID;
             }
         count--;
     }
