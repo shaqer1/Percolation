@@ -30,11 +30,10 @@ public class MyUF {
 // Nothing to do if p and q are already
         //in the same component.
 // Rename p’s component to q’s name.
+        freq[idToChange]+=freq[idToCompare];
         for (int i = 0; i < id.length; i++)
             if (id[i] == idToCompare) {
                 id[i] = idToChange;
-                freq[qID]--;
-                freq[pID]++;
             }
         count--;
     }
