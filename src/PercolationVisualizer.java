@@ -33,15 +33,15 @@ public class PercolationVisualizer {
     }
 
     public static void main(String[] args) {
-        In in = new In(args[0]);      // input file
-        int N = in.readInt();         // N-by-N percolation system
+        //In in = new In(args[0]);      // input file
+        int N = StdIn.readInt();         // N-by-N percolation system
         StdDraw.show(0);
         Percolation perc = new Percolation(N, "fast");
         draw(perc, N);
         StdDraw.show(ANIM_DELAY);
-        while (!in.isEmpty()) {
-            int i = in.readInt();
-            int j = in.readInt();
+        while (!StdIn.isEmpty()) {
+            int i = StdIn.readInt();
+            int j = StdIn.readInt();
             perc.open(i, j);
             draw(perc, N);
             StdDraw.show(ANIM_DELAY);
